@@ -1,0 +1,28 @@
+
+
+CREATE TABLE uber_rides ( 
+ride_id INT PRIMARY KEY, 
+customer_id INT, 
+customer_name VARCHAR(50), 
+city VARCHAR(50), 
+ride_date DATE, 
+cancelled BOOLEAN 
+); 
+INSERT INTO uber_rides VALUES 
+(1, 201, 'Mani', 'Chennai', '2025-04-01', FALSE), 
+(2, 201, 'Mani', 'Chennai', '2025-04-02', FALSE), 
+(51, 202, 'Ravi', 'Chennai', '2025-04-01', FALSE), 
+(52, 202, 'Ravi', 'Chennai', '2025-04-02', TRUE), 
+(100, 203, 'Arun', 'Coimbatore', '2025-04-01', FALSE); 
+
+The SQL query to find customers who completed at least 50 rides in Chennai over the last 3 months without any cancellations
+=========================================
+select customer_name,count(*) as total_rides
+from uber_rides
+where  city = "Chennai" 
+and 
+cancelled =FALSE
+and
+ride_date >= date_sub(current_date(),interval 3 month)
+group by customer_id,customer_name
+having count(*)>=50;
