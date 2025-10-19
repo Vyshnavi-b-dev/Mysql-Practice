@@ -1,0 +1,101 @@
+CTE(Common Table Expression)
+============================
+A CTE is a temporary named result set defined using the 'WITH' clause that can be referenced within a SELECT, WHERE, 
+UPDATE or DELETE query.
+
+
+Create and Insert a Table
+==========================
+CREATE TABLE sales (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_name VARCHAR(50),
+    department VARCHAR(30),
+    sale_amount DECIMAL(10,2),
+    sale_date DATE
+);
+INSERT INTO sales (employee_name, department, sale_amount, sale_date) VALUES
+('Alice', 'Electronics', 500.00, '2025-10-01'),
+('Bob', 'Electronics', 700.00, '2025-10-02'),
+('Charlie', 'Clothing', 300.00, '2025-10-03'),
+('David', 'Clothing', 400.00, '2025-10-04'),
+('Eva', 'Electronics', 600.00, '2025-10-05'),
+('Frank', 'Groceries', 200.00, '2025-10-06'),
+('Grace', 'Groceries', 250.00, '2025-10-07');
+
+CTE Questions with Answers
+===========================
+1. Get the total sales amount for each department using a CTE
+-------------------------------------------------------------
+WITH dept_sales AS (
+    SELECT department, SUM(sale_amount) AS total_sales
+    FROM sales
+    GROUP BY department
+)
+SELECT * FROM dept_sales;
+
+2. Find employees who made sales above the average sale amount
+--------------------------------------------------------------
+WITH avg_sale AS (
+    SELECT AVG(sale_amount) AS avg_amount
+    FROM sales
+)
+SELECT employee_name, sale_amount
+FROM sales
+WHERE sale_amount > (SELECT avg_amount FROM avg_sale);
+
+            or
+with avg_sales as (
+  select avg(sale_amount) as average_sales
+  from sales)
+select s.employee_name,s.sale_amount
+from sales s
+join
+avg_sales a
+on
+s.sale_amount > a.average_sales;
+
+3. Find the highest sale in each department using a CTE
+-------------------------------------------------------
+WITH dept_max AS (
+    SELECT department, MAX(sale_amount) AS max_sale
+    FROM sales
+    GROUP BY department
+)
+SELECT * FROM dept_max;
+
+4. Show only departments whose total sales exceed 500
+-----------------------------------------------------
+WITH dept_total AS (
+    SELECT department, SUM(sale_amount) AS total_sales
+    FROM sales
+    GROUP BY department
+)
+SELECT *
+FROM dept_total
+WHERE total_sales > 500;
+
+5. Rank employees by sales within their department
+--------------------------------------------------
+WITH ranked_sales AS (
+    SELECT 
+        employee_name,
+        department,
+        sale_amount,
+        RANK() OVER (PARTITION BY department ORDER BY sale_amount DESC) AS rank_in_dept
+    FROM sales
+)
+SELECT * FROM ranked_sales;
+
+6. Calculate cumulative sales by department
+-------------------------------------------
+WITH cumulative_sales AS (
+    SELECT
+        department,
+        sale_date,
+        sale_amount,
+        SUM(sale_amount) OVER (PARTITION BY department ORDER BY sale_date) AS running_total
+    FROM sales
+)
+SELECT * FROM cumulative_sales;
+
+
