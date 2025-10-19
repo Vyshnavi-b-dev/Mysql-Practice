@@ -1,0 +1,26 @@
+
+️Create & Insert DDL
+===========================
+CREATE TABLE amazon_orders ( 
+order_id INT PRIMARY KEY, 
+customer_id INT, 
+customer_name VARCHAR(50), 
+product_id INT, 
+product_name VARCHAR(50), 
+order_date DATE);
+
+INSERT INTO amazon_orders VALUES(1, 401, 'Priya', 1001, 'Bluetooth Speaker', '2025-04-02'), 
+(2, 401, 'Priya', 1001, 'Bluetooth Speaker', '2025-04-10'), 
+(3, 401, 'Priya', 1001, 'Bluetooth Speaker', '2025-04-20'), 
+(4, 401, 'Priya', 1001, 'Bluetooth Speaker', '2025-05-01'), 
+(5, 401, 'Priya', 1001, 'Bluetooth Speaker', '2025-05-15'), 
+(6, 402, 'Arjun', 1002, 'Wireless Mouse', '2025-04-05'), 
+(7, 402, 'Arjun', 1002, 'Wireless Mouse', '2025-06-01');
+
+1. To find Amazon customers who purchased the same product at least 5 times in the last 3 months. 
+-------------------------------------------------------------------------------------------------
+SELECT customer_id, customer_name, product_id, product_name, COUNT(*) AS purchase_count 
+FROM amazon_orders 
+WHERE order_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) GROUP BY customer_id, customer_name, product_id, product_name 
+HAVING purchase_count >= 5; 
+
